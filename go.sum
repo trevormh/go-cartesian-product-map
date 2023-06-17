@@ -1,0 +1,4 @@
+github.com/schwarmco/go-cartesian-product v0.0.0-20180515110546-d5ee747a6dc9 h1:rIlaPhb87A5GJy0FbjlxesD2lyr052gS/pF6NSAvSEo=
+github.com/schwarmco/go-cartesian-product v0.0.0-20180515110546-d5ee747a6dc9/go.mod h1:0jtE6j9sPEDD6gfLzxwt1eF2VI6u/w1sQ99IuZcUfyk=
+github.com/trevormh/go-cartesian-product-map v0.0.0-20180515110546-d5ee747a6dc9 h1:N71priyOxd3ZPMBOzd8880khEpoZKR4qm4YG3rrIR4o=
+github.com/trevormh/go-cartesian-product-map v0.0.0-20180515110546-d5ee747a6dc9/go.mod h1:nMccS68yIjPyVpo5+XGYjxaa4QgEWUPvopZptiB0voo=

@@ -1,9 +1,6 @@
-# go-cartesian-product
+# go-cartesian-product-map
 
-[![Build Status](https://travis-ci.org/schwarmco/go-cartesian-product.svg?branch=master)](https://travis-ci.org/schwarmco/go-cartesian-product)
-[![GoDoc](https://godoc.org/github.com/schwarmco/go-cartesian-product?status.svg)](https://godoc.org/github.com/schwarmco/go-cartesian-product)
-
-a package for building [cartesian products](https://en.wikipedia.org/wiki/Cartesian_product) in golang
+a package for building [cartesian products](https://en.wikipedia.org/wiki/Cartesian_product) for maps in golang. This is a modified version of [schwarmco/go-cartesian-product](https://github.com/schwarmco/go-cartesian-product) to enable creating cartesian products while retaining map keys.
 
 keep in mind, that because [how golang handles maps](https://blog.golang.org/go-maps-in-action#TOC_7.) your results will not be "in order"
 
@@ -12,7 +9,7 @@ keep in mind, that because [how golang handles maps](https://blog.golang.org/go-
 In order to start, `go get` this repository:
 
 ```
-go get github.com/schwarmco/go-cartesian-product
+go get trevormh/go-cartesian-product-map
 ```
 
 ## Usage
@@ -20,47 +17,58 @@ go get github.com/schwarmco/go-cartesian-product
 ```go
 import (
     "fmt"
-    "github.com/schwarmco/go-cartesian-product"
+    "github.com/trevormh/go-cartesian-product-map
 )
 
 func main() {
     
-    a := []interface{}{1,2,3}
-    b := []interface{}{"a","b","c"}
+	a := map[string][]interface{} {
+		"some_key": {1, 2, "c"},
+		"another_key": {"ten","nine","eight"},
+	}
+	
+	b := map[string][]interface{} {
+		"b_key": {10,11,12},
+	}
 
-    c := cartesian.Iter(a, b)
+	c := map[string][]interface{} {
+		"key-c": {"test"},
+	}
 
-    // receive products through channel
-    for product := range c {
-        fmt.Println(product)
-    }
+	d := cartesian.Iter(a, b, c)
 
-    // Unordered Output:
-    // [1 c]
-    // [2 c]
-    // [3 c]
-    // [1 a]
-    // [1 b]
-    // [2 a]
-    // [2 b]
-    // [3 a]
-    // [3 b]
-}
-```
+	// receive products through channel
+	for product := range d {
+		fmt.Println(product)
+	}
 
-## Working with Types
-
-Because you are giving interfaces to Iter() and golang doesn't support mixed-type-maps (which is why i created this package) you have to assert types, when you do function-calls or something like that:
-
-```go
-
-func someFunc(a int, b string) {
-    // some code
-}
-
-// ...
-
-for product := range c {
-    someFunc(product[0].(int), product[1].(string))
+	// Unordered Output:
+	// map[another_key:eight b_key:12 key-c:test some_key:c]
+	// map[another_key:eight b_key:12 key-c:test some_key:2]
+	// map[another_key:eight b_key:12 key-c:test some_key:1]
+	// map[another_key:ten b_key:12 key-c:test some_key:2]
+	// map[another_key:nine b_key:12 key-c:test some_key:1]
+	// map[another_key:eight b_key:10 key-c:test some_key:1]
+	// map[another_key:eight b_key:11 key-c:test some_key:1]
+	// map[another_key:ten b_key:10 key-c:test some_key:2]
+	// map[another_key:ten b_key:11 key-c:test some_key:2]
+	// map[another_key:nine b_key:10 key-c:test some_key:1]
+	// map[another_key:nine b_key:11 key-c:test some_key:1]
+	// map[another_key:nine b_key:12 key-c:test some_key:2]
+	// map[another_key:nine b_key:10 key-c:test some_key:2]
+	// map[another_key:nine b_key:11 key-c:test some_key:2]
+	// map[another_key:ten b_key:12 key-c:test some_key:1]
+	// map[another_key:eight b_key:10 key-c:test some_key:2]
+	// map[another_key:ten b_key:12 key-c:test some_key:c]
+	// map[another_key:ten b_key:10 key-c:test some_key:c]
+	// map[another_key:eight b_key:11 key-c:test some_key:2]
+	// map[another_key:ten b_key:10 key-c:test some_key:1]
+	// map[another_key:ten b_key:11 key-c:test some_key:1]
+	// map[another_key:ten b_key:11 key-c:test some_key:c]
+	// map[another_key:nine b_key:12 key-c:test some_key:c]
+	// map[another_key:nine b_key:10 key-c:test some_key:c]
+	// map[another_key:nine b_key:11 key-c:test some_key:c]
+	// map[another_key:eight b_key:10 key-c:test some_key:c]
+	// map[another_key:eight b_key:11 key-c:test some_key:c]
 }
 ```

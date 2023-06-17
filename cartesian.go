@@ -1,16 +1,30 @@
 package cartesian
 
-import "sync"
+import (
+	"sync"
+)
 
 // Iter takes interface-slices and returns a channel, receiving cartesian products
-func Iter(params ...[]interface{}) chan []interface{} {
+func Iter(params ...map[string][]interface{}) chan map[string]interface{} {
 	// create channel
-	c := make(chan []interface{})
+	c := make(chan map[string]interface{})
 	// create waitgroup
 	var wg sync.WaitGroup
 	// call iterator
 	wg.Add(1)
-	iterate(&wg, c, []interface{}{}, params...)
+
+	// flatten any params passed in with multiple keys
+	var combined []map[string][]interface{}
+	for _,m := range params {
+		for key,val := range m {
+			flattened := map[string][]interface{} {
+				key: val,
+			}
+			combined = append(combined, flattened)
+		}
+	}
+	iterate(&wg, c, map[string]interface{} {}, combined...)
+
 	// call channel-closing go-func
 	go func() { wg.Wait(); close(c) }()
 	// return channel
@@ -18,7 +32,7 @@ func Iter(params ...[]interface{}) chan []interface{} {
 }
 
 // private, recursive Iteration-Function
-func iterate(wg *sync.WaitGroup, channel chan []interface{}, result []interface{}, params ...[]interface{}) {
+func iterate(wg *sync.WaitGroup, channel chan map[string]interface{}, result map[string]interface{}, params ...map[string][]interface{}) {
 	// dec WaitGroup when finished
 	defer wg.Done()
 	// no more params left?
@@ -29,13 +43,26 @@ func iterate(wg *sync.WaitGroup, channel chan []interface{}, result []interface{
 	}
 	// shift first param
 	p, params := params[0], params[1:]
+
+	var pkey string
+	for key := range p {
+		pkey = key
+		break
+	}
+
 	// iterate over it
-	for i := 0; i < len(p); i++ {
+	for i := 0; i < len(p[pkey]); i++ {
 		// inc WaitGroup
 		wg.Add(1)
+		
 		// create copy of result
-		resultCopy := append([]interface{}{}, result...)
+		resultCopy := map[string]interface{}{}
+		for k,v := range result {
+			resultCopy[k] = v
+		}
+		resultCopy[pkey] = p[pkey][i]
+
 		// call self with remaining params
-		go iterate(wg, channel, append(resultCopy, p[i]), params...)
+		go iterate(wg, channel, resultCopy, params...)
 	}
 }
