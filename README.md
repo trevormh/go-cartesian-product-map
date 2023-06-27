@@ -1,6 +1,6 @@
 # go-cartesian-product-map
 
-a package for building [cartesian products](https://en.wikipedia.org/wiki/Cartesian_product) for maps in golang. This is a modified version of [schwarmco/go-cartesian-product](https://github.com/schwarmco/go-cartesian-product) to enable creating cartesian products while retaining map keys.
+This is a modified version of [schwarmco/go-cartesian-product](https://github.com/schwarmco/go-cartesian-product) to enable creating cartesian products while retaining map keys.
 
 keep in mind, that because [how golang handles maps](https://blog.golang.org/go-maps-in-action#TOC_7.) your results will not be "in order"
 
